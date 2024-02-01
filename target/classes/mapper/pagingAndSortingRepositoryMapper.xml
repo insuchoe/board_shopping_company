@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pagingAndSortingRepositoryMapper">
+
+    <resultMap id="board" type="com.brandedCompany.domain.Board">
+        <result jdbcType="NUMERIC" column="BOARD_ID" javaType="bigInt" property="boardId"/>
+        <result jdbcType="VARCHAR" column="TITLE" javaType="string" property="title"/>
+        <result jdbcType="VARCHAR" column="CONTENT" javaType="string" property="content"/>
+        <result jdbcType="VARCHAR" column="PUBLISHER" javaType="string" property="publisher"/>
+        <result jdbcType="DATE" column="PUBLISHED_DATE" javaType="localDate" property="publishedDate"/>
+        <result jdbcType="NUMERIC" column="VIEWS" javaType="bigInt" property="views"/>
+        <result jdbcType="NUMERIC" column="EMPLOYEE_ID" javaType="bigInt" property="employeeId"/>
+    </resultMap>
+
+    <sql id="count">
+        <choose>
+            <when test=" 'BoardSearchCondition' eq classSimpleName ">
+                SELECT COUNT(*) FROM BOARDS
+            </when>
+            <when test=" 'CommentSearchCondition' eq classSimpleName ">
+                SELECT COUNT(*) FROM COMMENTS
+            </when>
+            <when test=" 'OrderHistorySearchCondition' eq classSimpleName ">
+                select COUNT(*)
+                from CUSTOMERS C
+                INNER JOIN ORDERS O ON C.CUSTOMER_ID=O.CUSTOMER_ID
+                INNER JOIN ORDER_ITEMS OI on O.ORDER_ID = OI.ORDER_ID
+                INNER JOIN PRODUCTS P on P.PRODUCT_ID = OI.PRODUCT_ID
+            </when>
+            <when test=" 'ProductSearchCondition' eq classSimpleName ">
+                SELECT COUNT(*) FROM PRODUCTS
+            </when>
+            <when test=" 'InventorySearchCondition' eq classSimpleName ">
+                SELECT COUNT(*) FROM REGIONS R
+                INNER JOIN COUNTRIES C on R.REGION_ID = C.REGION_ID
+                INNER JOIN LOCATIONS L on C.COUNTRY_ID =L.COUNTRY_ID
+                INNER JOIN WAREHOUSES W on L.LOCATION_ID = W.LOCATION_ID
+                INNER JOIN INVENTORIES I on W.WAREHOUSE_ID = I.WAREHOUSE_ID
+                INNER JOIN PRODUCTS P on I.PRODUCT_ID = P.PRODUCT_ID
+            </when>
+            <when test=" 'CartSearchCondition' eq classSimpleName">
+                SELECT COUNT(*) FROM CARTS
+            </when>
+        </choose>
+    </sql>
+
+
+    <sql id="select">
+        <choose>
+            <when test=" 'BoardSearchCondition' eq classSimpleName ">
+                SELECT * FROM BOARDS
+            </when>
+            <when test=" 'CommentSearchCondition' eq classSimpleName ">
+                SELECT * FROM COMMENTS
+            </when>
+            <when test=" 'OrderHistorySearchCondition' eq classSimpleName ">
+                select OI.ORDER_ID,OI.ITEM_ID,P.PRODUCT_NAME ,C.NAME AS ORDERER, C.ADDRESS AS ADDRESS,O.STATUS AS
+                ORDER_STATUS
+                ,O.ORDER_DATE AS ORDER_DATE, OI.QUANTITY AS QUANTITY, OI.UNIT_PRICE AS UNIT_PRICE,
+                OI.UNIT_PRICE * OI.QUANTITY AS TOTAL_PRICE
+                from CUSTOMERS C
+                INNER JOIN ORDERS O ON C.CUSTOMER_ID=O.CUSTOMER_ID
+                INNER JOIN ORDER_ITEMS OI on O.ORDER_ID = OI.ORDER_ID
+                INNER JOIN PRODUCTS P on P.PRODUCT_ID = OI.PRODUCT_ID
+            </when>
+            <when test=" 'ProductSearchCondition' eq classSimpleName ">
+                SELECT * FROM PRODUCTS
+            </when>
+            <when test=" 'InventorySearchCondition' eq classSimpleName">
+                SELECT
+                R.REGION_NAME,C.COUNTRY_NAME,L.CITY,L.ADDRESS,W.WAREHOUSE_NAME,P.PRODUCT_NAME,I.QUANTITY,P.LIST_PRICE
+                from REGIONS R
+                INNER JOIN COUNTRIES C on R.REGION_ID = C.REGION_ID
+                INNER JOIN LOCATIONS L on C.COUNTRY_ID =L.COUNTRY_ID
+                INNER JOIN WAREHOUSES W on L.LOCATION_ID = W.LOCATION_ID
+                INNER JOIN INVENTORIES I on W.WAREHOUSE_ID = I.WAREHOUSE_ID
+                INNER JOIN PRODUCTS P on I.PRODUCT_ID = P.PRODUCT_ID
+            </when>
+            <when test=" 'CartSearchCondition' eq classSimpleName">
+                SELECT * FROM CARTS
+            </when>
+        </choose>
+    </sql>
+
+    <!--
+    BoardSearchCondition(게시글 검색 조건),
+    CommentSearchCondition(댓글 검색 조건),
+    OrderHistorySearchCondition(주문 내역 검색 조건),
+    ProductSearchCondition(상품 검색 조건)
+    -->
+    <sql id="searchCondition">
+        <choose>
+            <!-- 게시판 검색 조건 세팅-->
+            <when test=" 'BoardSearchCondition' eq classSimpleName">
+                <bind name="isExistKeyword" value="keyword neq null "/>
+                <bind name="k" value="keyword"/>
+
+                <if test="isExistKeyword">
+
+                    <bind name="o" value="optionName"/>
+                    <bind name="isTitleContent" value="o eq 'TITLE_CONTENT'"/>
+                    <bind name="isTitle" value="o eq 'TITLE'"/>
+                    <bind name="isContent" value="o eq 'CONTENT'"/>
+                    <bind name="isPublisher" value="o eq 'PUBLISHER' "/>
+                    <bind name="isPublisherContent" value="o eq 'PUBLISHER_CONTENT' "/>
+                    <choose>
+                        <when test="isTitle">
+                            <where>
+                                TITLE like '%' || #{k} || '%'
+                                OR TITLE like #{k} || '%'
+                                OR TITLE like '%' || #{k}
+                            </where>
+                        </when>
+                        <when test="isPublisher">
+                            <where>
+                                PUBLISHER like '%' || #{k} || '%'
+                                OR PUBLISHER like #{k} || '%'
+                                OR PUBLISHER like '%' || #{k}
+                            </where>
+                        </when>
+                        <when test="isContent">
+                            <where>
+                                CONTENT like '%' || #{k} || '%'
+                                OR CONTENT like #{k} || '%'
+                                OR CONTENT like '%' || #{k}
+                            </where>
+                        </when>
+                        <when test="isPublisherContent">
+                            <where>
+                                ( PUBLISHER like '%' || #{k} || '%'
+                                OR PUBLISHER like #{k} || '%'
+                                OR PUBLISHER like '%' || #{k})
+                                OR
+                                (CONTENT like '%' || #{k} || '%'
+                                OR CONTENT like #{k} || '%'
+                                OR CONTENT like '%' || #{k})
+                            </where>
+                        </when>
+                        <when test="isTitleContent">
+                            <where>
+                                (TITLE like '%' || #{k} || '%' OR
+                                TITLE like #{k} || '%' OR
+                                TITLE like '%' || #{k})
+                                OR
+                                (CONTENT like '%' || #{k} || '%' OR
+                                CONTENT like #{k} || '%' OR
+                                CONTENT like '%' || #{k})
+                            </where>
+                        </when>
+                        <when test="isExistEmployeeId">
+                            <where>
+                                EMPLOYEE_ID=#{employeeId}
+                            </where>
+                        </when>
+                    </choose>
+                </if>
+            </when>
+
+            <!-- 주문 내역 검색 세팅-->
+            <when test=" 'OrderHistorySearchCondition' eq classSimpleName ">
+                <bind name="isExistCustomerId" value="null neq customerId"/>
+                <bind name="isExistStatus" value="null neq status"/>
+                <bind name="isExistTarget" value="null neq target"/>
+                <bind name="isExistKeyword" value="keyword neq null"/>
+                <bind name="isExistMonthAgo" value="null neq monthAgo and 0 neq monthAgo"/>
+
+                <!-- 직원 페이지에서 보는 고객의 주문 내역 페이지 쿼리 -->
+                <choose>
+                    <when test="isExistKeyword">
+                        <if test="isExistTarget">
+                            <choose>
+                                <when test=" 'ORDER_DATE' eq target.name()">
+                                    WHERE O.ORDER_DATE = TO_DATE(#{keyword},'YYYYMMDD')
+                                </when>
+                                <when test=" 'ORDER_STATUS' eq target.name()">
+                                    WHERE O.STATUS = #{keyword}
+                                </when>
+                                <when test=" 'ORDERER' eq target.name()">
+                                    WHERE C.NAME = #{keyword}
+                                </when>
+                            </choose>
+                            <if test="isExistStatus">
+                                <choose>
+                                    <when test=" 'Pending' eq status.name()">
+                                        AND O.STATUS= 'Pending'
+                                    </when>
+                                    <when test=" 'Shipped' eq status.name()">
+                                        AND O.STATUS= 'Shipped'
+                                    </when>
+                                    <when test=" 'Canceled' eq status.name()">
+                                        AND O.STATUS= 'Canceled'
+                                    </when>
+                                </choose>
+                            </if>
+                        </if>
+                    </when>
+
+                    <!-- 고객 페이지에서 주문 내역 조회 -->
+                    <when test="isExistCustomerId">
+
+                        WHERE O.CUSTOMER_ID =#{customerId}
+                        <if test="isExistMonthAgo">
+                            AND O.ORDER_DATE
+                            BETWEEN TO_DATE(ADD_MONTHS(SYSDATE,- #{monthAgo})) AND TO_DATE(SYSDATE)
+                        </if>
+                    </when>
+
+                    <otherwise>
+                        <if test="isExistTarget">
+                            <if test="isExistStatus">
+                                <choose>
+                                    <when test=" 'Pending' eq status.name()">
+                                        WHERE O.STATUS= 'Pending'
+                                    </when>
+                                    <when test=" 'Shipped' eq status.name()">
+                                        WHERE O.STATUS= 'Shipped'
+                                    </when>
+                                    <when test=" 'Canceled' eq status.name()">
+                                        WHERE O.STATUS= 'Canceled'
+                                    </when>
+                                </choose>
+                            </if>
+                        </if>
+                    </otherwise>
+                </choose>
+
+
+            </when>
+
+            <!--댓글 검색 조건-->
+            <when test=" 'CommentSearchCondition' eq classSimpleName ">
+                <bind name="isExistBoardId" value="null neq boardId and 0 neq boardId"/>
+                <bind name="isExistEmployeeId" value="null neq employeeId and 0 neq employeeId"/>
+                <if test="isExistBoardId or isExistEmployeeId">
+                    WHERE
+                </if>
+                <if test="isExistBoardId">
+                    BOARD_ID=#{boardId}
+                    <if test="isExistEmployeeId">AND</if>
+                </if>
+                <if test="isExistEmployeeId">EMPLOYEE_ID=#{employeeId}</if>
+            </when>
+
+            <!-- 상품 검색 조건-->
+            <when test=" 'ProductSearchCondition' eq classSimpleName">
+
+                <!-- 입력한 키워드가 있으면-->
+                <if test="null neq keyword">
+                    <where>
+                        <choose>
+                            <!-- 선택한 정렬대상이 상품 이라면-->
+                            <when test=" 'PRODUCT_NAME' eq target.name() ">
+                                PRODUCT_NAME LIKE
+                                #{keyword} || '%' OR
+                                PRODUCT_NAME LIKE
+                                '%' || #{keyword} || '%' OR
+                                PRODUCT_NAME LIKE
+                                '%' || #{keyword}
+                                <!--<choose>
+                                    <when test="'ASC' eq direction.name()">
+                                        ORDER BY PRODUCT_NAME ASC
+                                    </when>
+                                    <when test="'DESC' eq direction.name()">
+                                        ORDER BY PRODUCT_NAME DESC
+                                    </when>
+                                </choose>-->
+                            </when>
+
+                            <when test=" 'LIST_PRICE' eq target.name() ">
+                                <!-- 선택한 정렬대상이 가격이라면-->
+                                LIST_PRICE LIKE
+                                #{keyword} || '%' OR
+                                LIST_PRICE LIKE
+                                '%' || #{keyword} || '%' OR
+                                LIST_PRICE LIKE
+                                '%' || #{keyword}
+                                <choose>
+                                    <when test="'ASC' eq direction.name()">
+                                        ORDER BY LIST_PRICE ASC
+                                    </when>
+                                    <when test="'DESC' eq direction.name()">
+                                        ORDER BY LIST_PRICE DESC
+                                    </when>
+                                </choose>
+                            </when>
+                        </choose>
+                    </where>
+                </if>
+
+            </when>
+            <when test=" 'InventorySearchCondition' eq classSimpleName">
+                <if test=" null neq sortTarget and null neq keyword">
+                    <bind name="stVal" value="sortTarget.name()"/>
+                    <choose>
+                        <when test=" stVal eq 'QUANTITY'">
+                            <where>
+                                I.QUANTITY = #{keyword}
+                            </where>
+                        </when>
+                        <when test="stVal eq 'LIST_PRICE'">
+                            <where>
+                                P.LIST_PRICE = #{keyword}
+                            </where>
+                        </when>
+                        <when test="stVal eq 'PRODUCT_NAME'">
+                            <where>
+                                P.PRODUCT_NAME LIKE #{keyword} || '%' OR
+                                P.PRODUCT_NAME LIKE '%' || #{keyword} || '%' OR
+                                P.PRODUCT_NAME LIKE #{keyword} || '%'
+                            </where>
+                        </when>
+                        <when test="stVal eq 'REGION_NAME'">
+                            <where>
+                                R.REGION_NAME LIKE #{keyword} || '%' OR
+                                R.REGION_NAME LIKE '%' || #{keyword} || '%' OR
+                                R.REGION_NAME LIKE #{keyword} || '%'
+                            </where>
+                        </when>
+                        <when test="stVal eq 'COUNTRY_NAME'">
+                            <where>
+                                C.COUNTRY_NAME LIKE #{keyword} || '%' OR
+                                C.COUNTRY_NAME LIKE '%' || #{keyword} || '%' OR
+                                C.COUNTRY_NAME LIKE #{keyword} || '%'
+                            </where>
+                        </when>
+                        <when test="stVal eq 'ADDRESS'">
+                            <where>
+                                L.ADDRESS LIKE #{keyword} || '%' OR
+                                L.ADDRESS LIKE '%' || #{keyword} || '%' OR
+                                L.ADDRESS LIKE #{keyword} || '%'
+                            </where>
+                        </when>
+                        <when test="stVal eq 'CITY'">
+                            <where>
+                                L.CITY LIKE #{keyword} || '%' OR
+                                L.CITY LIKE '%' || #{keyword} || '%' OR
+                                L.CITY LIKE #{keyword} || '%'
+                            </where>
+                        </when>
+                        <when test="stVal eq 'WAREHOUSE_NAME'">
+                            <where>
+                                W.WAREHOUSE_NAME LIKE #{keyword} || '%' OR
+                                W.WAREHOUSE_NAME LIKE '%' || #{keyword} || '%' OR
+                                W.WAREHOUSE_NAME LIKE #{keyword} || '%'
+                            </where>
+                        </when>
+                    </choose>
+                </if>
+
+            </when>
+            <when test="'CartSearchCondition' eq classSimpleName">
+                <choose>
+                    <when test="null neq customerId"><!-- 카트의 주인이 있으면 -->
+                        <where>
+                            CUSTOMER_ID = #{customerId}
+                        </where>
+                    </when>
+                </choose>
+            </when>
+        </choose>
+    </sql><!--SearchCondition-->
+    <sql id="order">
+        <choose>
+            <when test=" 'BoardSearchCondition' eq classSimpleName ">
+                ORDER BY PUBLISHED_DATE DESC, BOARD_ID DESC
+                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+            </when>
+            <when test=" 'CommentSearchCondition' eq classSimpleName ">
+                ORDER BY PARENT_COMMENT_ID ASC, COMMENT_ID ASC
+                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+            </when>
+            <when test=" 'OrderHistorySearchCondition' eq classSimpleName ">
+                <bind name="isExistTarget" value="null neq target"/>
+                <bind name="isExistDirection" value="null neq direction"/>
+                <choose>
+                    <when test="isExistDirection">
+                        ORDER BY
+                        <choose>
+                            <when test=" 'ORDER_DATE' eq target.name()">
+                                O.ORDER_DATE
+                            </when>
+                            <when test=" 'ORDER_STATUS' eq target.name()">
+                                O.STATUS
+                            </when>
+                            <when test=" 'ORDERER' eq target.name()">
+                                C.NAME
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test=" 'ASC' eq direction.name()">
+                                ASC , OI.ORDER_ID ASC, OI.ITEM_ID ASC
+                                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+                            </when>
+                            <when test=" 'DESC' eq direction.name()">
+                                DESC , OI.ORDER_ID DESC, OI.ITEM_ID ASC
+                                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+                            </when>
+                        </choose>
+                    </when>
+                    <otherwise>
+                        ORDER BY OI.ORDER_ID DESC, OI.ITEM_ID ASC
+                        OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+                    </otherwise>
+                </choose>
+
+            </when>
+            <when test=" 'ProductSearchCondition' eq classSimpleName ">
+                <choose>
+                    <when test="null neq target and null neq direction">
+
+                        <choose>
+                            <!-- PRODUCT_NAME 오름차순 -->
+                            <when test=" 'ASC' eq direction.name() and 'PRODUCT_NAME' eq target.name() ">
+                                ORDER BY PRODUCT_NAME ASC
+                            </when>
+                            <!-- PRODUCT_NAME 내림차순 -->
+                            <when test=" 'DESC' eq direction.name() and 'PRODUCT_NAME' eq target.name()">
+                                ORDER BY PRODUCT_NAME DESC
+                            </when>
+                            <!-- PRICE 오름차순 -->
+                            <when test=" 'ASC' eq direction.name() and 'LIST_PRICE' eq target.name()">
+                                ORDER BY LIST_PRICE ASC
+                            </when>
+                            <!-- PRICE 내림차순 -->
+                            <when test=" 'DESC' eq direction.name() and 'LIST_PRICE' eq target.name()">
+                                ORDER BY LIST_PRICE DESC
+                            </when>
+                        </choose>
+                    </when>
+                    <otherwise>
+                        ORDER BY PRODUCT_ID DESC
+                    </otherwise>
+                </choose>
+                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+            </when>
+            <when test=" 'InventorySearchCondition' eq classSimpleName">
+                    <choose>
+                    <when test="null neq sortDirection and null neq sortTarget">
+                        <bind name="sdtVal" value="sortDirection.name()"/>
+                        <bind name="stVal" value="sortTarget.name()"/>
+                        <choose>
+                            <when test="stVal eq 'QUANTITY' and sdtVal eq 'ASC'">
+                                ORDER BY I.QUANTITY ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'QUANTITY' and sdtVal eq 'DESC'">
+                                ORDER BY I.QUANTITY DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'LIST_PRICE' and sdtVal eq 'ASC'">
+                                ORDER BY P.LIST_PRICE ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'LIST_PRICE' and sdtVal eq 'DESC'">
+                                ORDER BY P.LIST_PRICE DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'PRODUCT_NAME' and sdtVal eq 'ASC'">
+                                ORDER BY P.PRODUCT_NAME ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'PRODUCT_NAME' and sdtVal eq 'DESC'">
+                                ORDER BY P.PRODUCT_NAME DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'REGION_NAME' and sdtVal eq 'ASC'">
+                                ORDER BY R.REGION_NAME ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'REGION_NAME' and sdtVal eq 'DESC'">
+                                ORDER BY R.REGION_NAME DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'COUNTRY_NAME' and sdtVal eq 'ASC'">
+                                ORDER BY C.COUNTRY_NAME ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'COUNTRY_NAME' and sdtVal eq 'DESC'">
+                                ORDER BY C.COUNTRY_NAME DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'ADDRESS' and sdtVal eq 'ASC'">
+                                ORDER BY L.ADDRESS ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'ADDRESS' and sdtVal eq 'DESC'">
+                                ORDER BY L.ADDRESS DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'CITY' and sdtVal eq 'ASC'">
+                                ORDER BY L.CITY ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'CITY' and sdtVal eq 'DESC'">
+                                ORDER BY L.CITY DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                            <when test="stVal eq 'WAREHOUSE_NAME' and sdtVal eq 'ASC'">
+                                ORDER BY W.WAREHOUSE_NAME ASC
+                                , P.PRODUCT_ID ASC
+                            </when>
+                            <when test="stVal eq 'WAREHOUSE_NAME' and sdtVal eq 'DESC'">
+                                ORDER BY W.WAREHOUSE_NAME DESC
+                                , P.PRODUCT_ID DESC
+                            </when>
+                        </choose>
+                    </when>
+                    <otherwise>ORDER BY P.PRODUCT_ID ASC </otherwise>
+                </choose>
+                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+            </when>
+            <when test=" 'CartSearchCondition' eq classSimpleName">
+                ORDER BY INCLUDED_DATE DESC
+                OFFSET <![CDATA[ #{offset} ROWS FETCH NEXT #{PAGE_SIZE} ROWS ONLY]]>
+            </when>
+        </choose>
+    </sql>
+
+    <select id="count" parameterType="com.brandedCompany.domain.searchCondition.SearchCondition" resultType="bigInt">
+        <include refid="count"/>
+        <include refid="searchCondition"/>
+    </select>
+
+    <select id="increaseViews" parameterType="bigInt">
+        UPDATE BOARDS
+        SET
+        VIEWS = 1+VIEWS
+        <where>BOARD_ID= #{boardId}</where>
+    </select>
+    <select id="pageAndSort" parameterType="com.brandedCompany.domain.searchCondition.SearchCondition"
+            resultType="hashMap">
+        <include refid="select"/>
+        <include refid="searchCondition"/>
+        <include refid="order"/>
+    </select>
+
+    <select id="selectRecentBoard" resultMap="board">
+        SELECT *
+        FROM BOARDS
+        ORDER BY BOARD_ID DESC
+        OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+    </select>
+    <select id="isExistComment" parameterType="bigInt" resultType="boolean">
+        select case
+                   when 0 = (select count(*) from COMMENTS where BOARD_ID = #{boardId}) then 0
+                   ELSE 1
+                   end
+        from dual
+    </select>
+</mapper>

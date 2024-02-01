@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="jdbcTypeForNull" value="NULL"/>
+    </settings>
+
+    <typeAliases>
+        <!--domain-->
+        <typeAlias type="com.brandedCompany.domain.Customer" alias="customer"/>
+        <typeAlias type="com.brandedCompany.domain.Contact" alias="contact"/>
+        <typeAlias type="com.brandedCompany.domain.Employee" alias="employee"/>
+        <typeAlias type="com.brandedCompany.domain.Board" alias="board"/>
+        <typeAlias type="com.brandedCompany.domain.Comment" alias="comment"/>
+
+
+
+        <typeAlias type="java.time.LocalDateTime" alias="localDate"/>
+        <!-- JDK API -->
+        <typeAlias type="java.util.HashMap" alias="hashmap"/>
+        <typeAlias type="java.util.ArrayList" alias="arraylist"/>
+        <typeAlias type="java.util.Collection" alias="collection"/>
+        <typeAlias type="java.lang.Object" alias="object"/>
+        <typeAlias type="java.lang.String" alias="string"/>
+        <typeAlias type="java.lang.Class" alias="class"/>
+
+        <!--자료형-->
+        <typeAlias type="java.math.BigInteger" alias="bigInt"/>
+        <typeAlias type="java.util.Optional" alias="optional"/>
+
+
+    </typeAliases>
+
+
+    <typeHandlers>
+        <typeHandler handler="org.apache.ibatis.type.LocalDateTypeHandler"/>
+
+    </typeHandlers>
+
+
+</configuration>

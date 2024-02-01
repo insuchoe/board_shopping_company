@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="crudRepositoryMapper">
+
+
+    <sql id="table">
+        <choose>
+            <when test=' clazz eq "Board" '>BOARDS</when>
+            <when test=' clazz eq "Contact" '>CONTACTS</when>
+            <when test=' clazz eq "Customer" '>CUSTOMERS</when>
+            <when test=' clazz eq "Employee" '>EMPLOYEES</when>
+            <when test=' clazz eq "Inventory" '>INVENTORIES</when>
+            <when test=' clazz eq "Country" '>COUNTRIES</when>
+            <when test=' clazz eq "Location" '>LOCATIONS</when>
+            <when test=' clazz eq "OrderItem" '>ORDER_ITEMS</when>
+            <when test=' clazz eq "Order" '>ORDERS</when>
+            <when test=' clazz eq "ProductCategory" '>PRODUCT_CATEGORIES</when>
+            <when test=' clazz eq "Product" '>PRODUCTS</when>
+            <when test=' clazz eq "Region" '>REGIONS</when>
+            <when test=' clazz eq "Warehouse" '>WAREHOUSES</when>
+            <when test=' clazz eq "Comment" '>COMMENTS</when>
+            <when test=" clazz eq 'Cart' ">CARTS</when>
+        </choose>
+    </sql>
+    <sql id="condition">
+        <choose>
+            <when test='clazz eq "Customer" '>
+                CUSTOMER_ID=#{domain.customerId}
+                and NAME=#{domain.name}
+                and ADDRESS=#{domain.address}
+                and WEBSITE=#{domain.website}
+                and CREDIT_LIMIT=#{domain.creditLimit}
+            </when>
+            <when test=' clazz eq "Comment" '>
+                COMMENT_ID= #{domain.commentId} and
+                BOARD_ID = #{domain.boardId} and
+                EMPLOYEE_ID = #{domain.employeeId} and
+                PARENT_COMMENT_ID=#{domain.parentCommentId}
+            </when>
+            <when test=' clazz eq "Contact" '>
+                CONTACT_ID = #{domain.contactId} and
+                FIRST_NAME = #{domain.firstName} and
+                LAST_NAME = #{domain.lastName} and
+                EMAIL = #{domain.email} and
+                PHONE = #{domain.phone} and
+                CUSTOMER_ID=#{domain.customerId}
+            </when>
+            <when test='clazz eq "Employee" '>
+                EMPLOYEE_ID = #{domain.employeeId} and
+                FIRST_NAME = #{domain.firstName} and
+                LAST_NAME = #{domain.lastName} and
+                EMAIL = #{domain.email} and
+                PHONE = #{domain.phone} and
+                HIRE_DATE = #{domain.hireDate} and
+                MANAGER_ID = #{domain.managerId} and
+                JOB_TITLE=#{domain.jobTitle}
+            </when>
+            <when test=' clazz eq "Board" '>
+                BOARD_ID=#{domain.boardId} and
+                EMPLOYEE_ID = #{domain.employeeId}
+            </when>
+            <when test='clazz eq "Country" '>
+
+            </when>
+            <when test='clazz eq "Location" '>
+
+            </when>
+            <when test='clazz eq "Order" '>
+
+            </when>
+
+            <when test='clazz eq "ProductCategory" '>
+
+            </when>
+            <when test='clazz eq "Product" '>
+
+            </when>
+            <when test='clazz eq "Region" '>
+
+            </when>
+            <when test='clazz eq "Warehouse" '>
+
+            </when>
+            <when test='clazz eq "Comment" '>
+                COMMENT_ID=#{commentId} and
+                BOARD_ID = #{boardId}
+            </when>
+            <when test="clazz eq 'Cart' ">
+                CUSTOMER_ID=#{customerId} and
+                PRODUCT_ID = #{productId}
+            </when>
+        </choose>
+
+    </sql>
+    <sql id="values">
+        <choose>
+            <when test='clazz eq "Board" '>
+                (TITLE, CONTENT,EMPLOYEE_ID,PUBLISHER)
+                values (#{domain.title},#{domain.content},#{domain.employeeId},#{domain.publisher})
+
+            </when>
+            <when test='clazz eq "Contact" '>
+                (CONTACT_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE, CUSTOMER_ID)
+                values (#{domain.contactId},#{domain.firstName},#{domain.lastName},#{domain.email},#{domain.phone},
+                #{domain.customerId})
+            </when>
+            <when test='clazz eq "Comment" '>
+                <choose>
+                    <when test="domain.parentCommentId eq null">
+                        (BOARD_ID,PUBLISHER, CONTENT,EMPLOYEE_ID)
+                        values (#{domain.boardId}, #{domain.publisher},#{domain.content},#{domain.employeeId})
+                    </when>
+                    <otherwise>
+                        (BOARD_ID, PARENT_COMMENT_ID,EMPLOYEE_ID, PUBLISHER,CONTENT)
+                        values (#{domain.boardId}, #{domain.parentCommentId},#{domain.employeeId},
+                        #{domain.publisher},#{domain.content})
+                    </otherwise>
+                </choose>
+
+            </when>
+            <when test='clazz eq "Customer" '>
+                (CUSTOMER_ID, NAME, ADDRESS, WEBSITE, CREDIT_LIMIT)
+                values (#{domain.customerId},#{domain.name},#{domain.address},#{domain.website},#{domain.creditLimit})
+            </when>
+            <when test='clazz eq "Employee" '>
+                (EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, PHONE, HIRE_DATE, MANAGER_ID, JOB_TITLE)
+                values (#{domain.employeeId},#{domain.firstName},#{domain.lastName},#{domain.email},#{domain.phone},
+                #{domain.hireDate},#{domain.managerId},#{domain.jobTitle})
+            </when>
+
+            <when test='clazz eq "Inventory" '>
+                (PRODUCT_ID, WAREHOUSE_ID,QUANTITY)
+                values(#{domain.productId},#{domain.warehouseId},#{domain.quantity})
+            </when>
+            <when test='clazz eq "Country" '>
+                (COUNTRY_ID,COUNTRY_NAME,REGION_ID) values
+                (#{domain.countryId},#{domain.countryName},#{domain.regionId})
+            </when>
+            <when test='clazz eq "Order" '>
+                <choose>
+                    <when test="null eq domain.salesmanId">
+                        (ORDER_ID,CUSTOMER_ID,STATUS,ORDER_DATE) values
+                        (#{domain.orderId},#{domain.customerId},#{domain.status}
+                        ,trunc(sysdate))
+                    </when>
+                    <otherwise>
+                        (#{domain.orderId},CUSTOMER_ID,STATUS,ORDER_DATE,SALESMAN_ID) values
+                        (#{domain.customerId},#{domain.status}
+                        ,trunc(sysdate)
+                        ,#{domain.salesmanId})
+
+                    </otherwise>
+                </choose>
+
+            </when>
+            <when test='clazz eq "Location" '>
+                (LOCATION_ID,ADDRESS,POSTAL_CODE,CITY,STATE,COUNTRY_ID) values
+                (#{domain.locationId},#{domain.address}, #{domain.postalCode}, #{domain.city},
+                #{domain.state},#{domain.countryId})
+            </when>
+            <when test='clazz eq "OrderItem" '>
+                (ORDER_ID,ITEM_ID,PRODUCT_ID,QUANTITY,UNIT_PRICE) values
+                (#{domain.orderId},#{domain.itemId},#{domain.productId},#{domain.quantity},#{domain.unitPrice})
+            </when>
+            <when test='clazz eq "ProductCategory" '>
+                (CATEGORY_ID,CATEGORY_NAME) values
+                (#{domain.categoryId},#{domain.categoryName})
+            </when>
+            <when test='clazz eq "Product" '>
+                (PRODUCT_ID, PRODUCT_NAME, DESCRIPTION, STANDARD_COST,
+                LIST_PRICE, CATEGORY_ID)
+                values (#{domain.productId},#{domain.productName},#{domain.description},
+                #{domain.standardCost},#{domain.listPrice},#{domain.categoryId})
+            </when>
+            <when test='clazz eq "Region" '>
+                (REGION_ID,REGION_NAME) values
+                (#{domain.regionId},#{domain.regionName})
+            </when>
+            <when test='clazz eq "Warehouse" '>
+                (WAREHOUSE_ID,WAREHOUSE_NAME,LOCATION_ID) values
+                (#{domain.warehouseId},#{domain.warehouseName},#{domain.locationId})
+            </when>
+            <when test="clazz eq 'Cart' ">
+                (CUSTOMER_ID ,PRODUCT_ID ,QUANTITY,
+                PRODUCT_NAME,UNIT_PRICE) values
+                (#{domain.customerId} ,#{domain.productId}, #{domain.quantity},
+                #{domain.productName},#{domain.unitPrice})
+            </when>
+        </choose>
+    </sql>
+    <sql id="set">
+        <choose>
+            <when test=' clazz eq "Board" '>
+                set
+                TITLE = #{domain.title} ,
+                CONTENT = #{domain.content}
+                <where>
+                    BOARD_ID= #{domain.boardId} and EMPLOYEE_ID = #{domain.employeeId}
+                </where>
+            </when>
+            <when test=' clazz eq "Contact" '>
+                set
+                FIRST_NAME = #{domain.firstName} ,
+                LAST_NAME = #{domain.lastName} ,
+                EMAIL = #{domain.email} ,
+                PHONE = #{domain.phone}
+                <where>
+                    CONTACT_ID= #{domain.contactId} and CUSTOMER_ID= #{domain.customerId}
+                </where>
+            </when>
+            <when test=' clazz eq "Customer" '>
+                set
+                NAME = #{domain.name} ,
+                ADDRESS = #{domain.address} ,
+                WEBSITE = #{domain.website} ,
+                CREDIT_LIMIT = #{domain.creditLimit}
+                <where>
+                    CUSTOMER_ID= #{domain.customerId}
+                </where>
+            </when>
+            <when test=' clazz eq "Comment" '>
+                SET
+                CONTENT = #{domain.content} ,
+                MODIFICATION_DATE = nvl(#{domain.modificationDate},sysdate)
+                <where>
+                    COMMENT_ID= #{domain.commentId} and
+                    BOARD_ID = #{domain.boardId} and
+                    EMPLOYEE_ID = #{domain.employeeId} and
+                    PARENT_COMMENT_ID=#{domain.parentCommentId}
+                </where>
+            </when>
+
+            <when test=' clazz eq "Employee" '>
+                set
+                FIRST_NAME = #{domain.firstName} ,
+                LAST_NAME = #{domain.lastName} ,
+                EMAIL = #{domain.email} ,
+                PHONE = #{domain.phone} ,
+                HIRE_DATE = #{domain.hireDate} ,
+                MANAGER_ID = #{domain.managerId} ,
+                JOB_TITLE = #{domain.jobTitle}
+                <where>
+                    EMPLOYEE_ID= #{domain.employeeId}
+                </where>
+            </when>
+            <when test=' clazz eq "Inventory" '>
+                SET QUANTITY = #{domain.quantity}
+                <where>
+                    PRODUCT_ID=#{domain.productId} AND WAREHOUSE_ID=#{domain.warehouseId}
+                </where>
+            </when>
+            <when test=' clazz eq "Country" '>
+                SET REGION_ID = #{domain.regionId}
+                <where>
+                    COUNTRY_ID =#{domain.countryId} AND
+                    COUNTRY_NAME = #{domain.countryName}
+                </where>
+            </when>
+            <when test=' clazz eq "Location" '>
+                SET ADDRESS=#{domain.address} ,
+                POSTAL_CODE=#{domain.postalCode},
+                CITY = #{domain.city},
+                STATE = #{domain.state}
+                <where>
+                    COUNTRY_ID=#{domain.countryId} AND
+                    LOCATION_ID=#{domain.locationId}
+                </where>
+            </when>
+            <when test=' clazz eq "OrderItem" '>
+                SET QUANTITY=#{domain.quantity},
+                UNIT_PRICE=#{domain.unitPrice}
+                <where>
+                    ORDER_ID=#{domain.orderId} AND
+                    ITEM_ID=#{domain.itemId} AND
+                    PRODUCT_ID = #{domain.productId}
+                </where>
+            </when>
+            <when test=' clazz eq "Order" '>
+                SET STATUS=#{domain.status}
+                <where>
+                    ORDER_ID=#{domain.orderId} AND
+                    CUSTOMER_ID=#{domain.customerId}
+                </where>
+            </when>
+            <when test=' clazz eq "ProductCategory" '>
+                SET CATEGORY_NAME = #{domain.categoryName}
+                <where>
+                    CATEGORY_ID=#{domain.categoryId}
+                </where>
+            </when>
+            <when test=' clazz eq "Product" '>
+                SET
+                PRODUCT_NAME = #{domain.productName},
+                DESCRIPTION = #{domain.description},
+                STANDARD_COST = #{domain.standardCost},
+                LIST_PRICE = #{domain.listPrice},
+                CATEGORY_ID =#{domain.categoryId}
+                <where>
+                    PRODUCT_ID =#{domain.productId}
+                </where>
+            </when>
+            <when test=' clazz eq "Region" '>
+                SET REGION_NAME=#{domain.regionName}
+                <where>
+                    REGION_ID=#{domain.regionId}
+                </where>
+            </when>
+            <when test=' clazz eq "Warehouse" '>
+                SET LOCATION_ID=#{domain.locationId},
+                WAREHOUSE_NAME=#{domain.warehouseName}
+                <where>
+                    WAREHOUSE_ID=#{domain.warehouseId}
+                </where>
+            </when>
+            <when test=" clazz eq 'Cart' ">
+                SET UNIT_PRICE=#{domain.unitPrice},
+                QUANTITY =#{domain.quantity}
+                <where>
+                    CUSTOMER_ID=#{domain.customerId} AND
+                    PRODUCT_ID=#{domain.productId}
+                </where>
+            </when>
+        </choose>
+
+    </sql>
+    <sql id="id">
+        <choose>
+            <when test=' clazz eq  "Board" '>BOARD_ID = #{id1}</when>
+            <when test=' clazz eq  "Comment" '>COMMENT_ID=#{id1}</when>
+            <when test=' clazz eq  "Contact" '>CONTACT_ID=#{id1}</when>
+            <when test=' clazz eq  "Customer" '>CUSTOMER_ID=#{id1}</when>
+            <when test=' clazz eq  "Employee" '>EMPLOYEE_ID=#{id1}</when>
+            <when test=' clazz eq  "Order" '>ORDER_ID=#{id1}</when>
+            <!-- 주문 아이템 -->
+
+            <when test=' clazz eq "OrderItem" '>
+                <choose>
+                    <!-- 아이템 번호가 업으면 주문번호로 -->
+                    <when test="null eq id2">
+                        ORDER_ID=#{id1}
+                    </when>
+                    <otherwise>
+                        <!-- 아이템 번호와 주문번호가 있으면-->
+                        ORDER_ID=#{id1} and ITEM_ID=#{id2}
+                    </otherwise>
+                </choose>
+            </when>
+            <when test=' clazz eq  "Product" '>PRODUCT_ID=#{id1}</when>
+            <when test=' clazz eq  "ProductCategory" '>CATEGORY_ID=#{id1}</when>
+            <when test=' clazz eq  "Inventory" '>PRODUCT_ID=#{id1} and WAREHOUSE_ID=#{id2}</when>
+            <when test=' clazz eq "Warehouse"'>WAREHOUSE_ID=#{id1}</when>
+            <when test=' clazz eq  "Location" '>LOCATION_ID=#{id1}</when>
+            <when test=' clazz eq  "Country" '>COUNTRY_ID=#{id1}</when>
+            <when test=' clazz eq  "Region" '>REGION_ID=#{id1}</when>
+            <when test=" clazz eq 'Cart' ">CUSTOMER_ID=#{id1} and PRODUCT_ID=#{id2}</when>
+        </choose>
+    </sql>
+
+    <select id="count" parameterType="string" resultType="bigInt">
+        select count(*) from
+        <include refid="table">
+            <property name="clazz" value="clazz"/>
+        </include>
+    </select>
+
+
+    <select id="isExist" parameterType="map" resultType="int">
+        select
+        case
+        when count(*) = 0 then 0
+        when count(*) > 0 then 1
+        end
+        from
+        <include refid="table">
+            <property name="clazz" value="clazz"/>
+        </include>
+
+        <where>
+            <include refid="id">
+                <property name="clazz" value="clazz"/>
+                <property name="id1" value="id1"/>
+                <property name="id2" value="id2"/>
+            </include>
+            <!--
+            select nvl2((SELECT COUNT(*)
+            FROM
+            ), 1, 0)
+            from dual-->
+        </where>
+    </select>
+
+
+
+    <select id="select" parameterType="map" resultType="hashmap">
+        select * from
+        <include refid="table">
+            <property name="clazz" value="clazz"/>
+        </include>
+
+        <choose>
+            <when test="id1 neq null">
+                <where>
+                    <include refid="id">
+                        <property name="clazz" value="clazz"/>
+                        <property name="id1" value="id1"/>
+                        <property name="id2" value="id2"/>
+                    </include>
+                </where>
+            </when>
+        </choose>
+    </select>
+
+
+    <delete id="delete" parameterType="map">
+        delete from
+        <include refid="table">
+            <property name="clazz" value="clazz"/>
+        </include>
+        <choose>
+            <when test="id1 neq null">
+                <where>
+                    <include refid="id">
+                        <property name="clazz" value="clazz"/>
+                        <property name="id1" value="id1"/>
+                        <property name="id2" value="id2"/>
+                    </include>
+                </where>
+            </when>
+            <when test="domain neq null">
+                <where>
+                    <include refid="condition">
+                        <property name="clazz" value="clazz"/>
+                        <property name="domain" value="domain"/>
+                    </include>
+                </where>
+            </when>
+        </choose>
+    </delete>
+
+    <insert id="insert" parameterType="map">
+        INSERT INTO
+        <include refid="table">
+            <property name="clazz" value="clazz"/>
+        </include>
+        <include refid="values">
+            <property name="clazz" value="clazz"/>
+            <property name="domain" value="domain"/>
+        </include>
+    </insert>
+
+
+    <update id="update" parameterType="map">
+        <bind name="clazz" value="domain.class.simpleName"/>
+        UPDATE
+        <include refid="table">
+            <property name="clazz" value="clazz"/>
+        </include>
+
+        <include refid="set">
+            <property name="clazz" value="clazz"/>
+            <property name="domain" value="domain"/>
+        </include>
+
+    </update>
+
+
+</mapper>

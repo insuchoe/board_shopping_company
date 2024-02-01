@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xsi:schemaLocation="http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc.xsd
+ http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc">
+    <!-- Root Context: defines shared resources visible to all other web components -->
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource" id="dataSource">
+        <property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+        <!--aws ec2 인스턴스 아이피-->
+        <property name="url" value="jdbc:log4jdbc:oracle:thin:@localhost:ora19c?allowMultiQueries=true"/>
+        <!--내 컴퓨터 아이피-->
+<!--        <property name="url" value="jdbc:log4jdbc:oracle:thin:@localhost:1521:ora19c?allowMultiQueries=true"/>-->
+<!--                <property value="oracle.jdbc.driver.OracleDriver" name="driverClassName"/>-->
+<!--                <property value="jdbc:oracle:thin:@localhost:1521:ora19c" name="url"/>-->
+        <property value="brandedcompany" name="username"/>
+        <property value="brandedcompany" name="password"/>
+    </bean>
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+        <property name="dataSource" ref="dataSource"/>
+        <property value="classpath:mybatis-config.xml" name="configLocation"/>
+        <property value="classpath:mapper/*Mapper*.xml" name="mapperLocations"/>
+
+    </bean>
+    <bean class="org.mybatis.spring.SqlSessionTemplate" id="sqlSession">
+        <constructor-arg ref="sqlSessionFactory"/>
+    </bean>
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <tx:annotation-driven/>
+    <context:component-scan base-package="com.brandedCompany"/>
+
+</beans>

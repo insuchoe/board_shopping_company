@@ -1,0 +1,135 @@
+
+* {
+    border: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Malgun Gothic", sans-serif;
+
+}
+
+.container {
+    width: 75%;
+    min-width: 60%;
+    height: auto;
+    margin: auto;
+    display: flex;
+
+}
+
+.myPage-container {
+    width: 100%;
+    height: auto;
+
+}
+.board-container{
+    width: 100%;
+    height: auto;
+    margin-top:30px;
+}
+
+.writing-header {
+    position: relative;
+    margin: 20px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #323232;
+    text-align: center;
+}
+
+.btn {
+    display: block;
+    background-color: rgb(236, 236, 236); /* Blue background */
+    border: 1px solid black; /* Remove _orders */
+    color: black; /* White text */
+    padding: 4px 4px; /* Some padding */
+    font-size: 14px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+    margin-top: 15px;
+    width: 50px;
+    height: 35px;
+}
+.profile-box {
+    width: auto;
+    height: auto;
+    border: 1px solid black;
+    display: flex;
+
+}
+
+.profile-img {
+    width: 200px;
+    height: 200px;
+}
+.profile-img>img {
+    max-width:  100%;
+    max-height: 100%;;
+}
+
+.profile-content {
+    width: 200px;
+    height: 100px;
+}
+.profile-contents {
+    width:auto;
+    height: 200px;
+    display: flex;
+    margin-left:30px;
+}
+.profile-update-img-box{
+    width: 200px;
+    height: 200px;
+    margin-left: 10px;
+    maring-right:10px;
+}
+
+.frm{
+    width: auto;
+    height: auto;
+    margin-top: 20px;
+}
+
+.profile-info  {
+    width:auto;
+    height: 200px;
+    font-size: 24px;
+    margin-right: 15px;
+}
+
+
+#id{
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 30px;
+}
+#name{
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 30px;
+
+}
+#hireDate{    margin-top:15px;
+
+    width: 100%;
+    margin-bottom: 30px;
+}
+#jobTitle{
+    width: 100%; margin-top: 15px;
+    margin-bottom: 30px;
+}
+.profile-info2 {
+    width:300px;
+    height: 200px;
+    font-size: 24px;
+    margin-left: 30px;
+}
+.profile-manager-info2 {
+    width: auto;
+    height: auto;
+    font-size: 18px;
+    color: #eff0f2;
+    marg-top: 5px;
+}

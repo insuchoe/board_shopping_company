@@ -1,0 +1,273 @@
+* {
+    border: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Malgun Gothic", sans-serif;
+
+}
+
+.container {
+    width: 75%;
+    min-width: 60%;
+    height: auto;
+    margin: auto;
+    display: flex;
+
+}
+
+.inventory-container {
+    width: 100%;
+    height: auto;
+
+}
+.inventory-empty
+{
+    width: 100%;
+    text-align: center;
+}
+.search-container {
+    display: flex;
+    margin: 10px 0 10px 0;
+
+}
+
+.search-container > form {
+    display: flex;
+    width: 100%;
+    height: auto;
+}
+
+
+label[for="search-keyword"] {
+    width: 70%;
+    height: 35px;
+    margin-right: 10px;
+}
+
+#search-keyword {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #e9e8e8;
+    padding: 8px;
+    background: #f8f8f8;
+    outline-color: #e6e6e6;
+}
+
+input[type="submit"] {
+    width: 10%;
+    height: 35px;
+}
+
+.writing-header {
+    position: relative;
+    margin: 20px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #323232;
+    text-align: center;
+}
+
+footer {
+    display: flex;
+    width: 100%;
+    height: 35px;
+    margin-top: 30px;
+}
+
+
+
+a {
+    text-decoration-line: none;
+    color: black;
+}
+
+
+textarea {
+    width: 100%;
+    background: #f8f8f8;
+    margin: 5px 0px 10px 0px;
+    border: 1px solid #e9e8e8;
+    resize: none;
+    padding: 8px;
+    outline-color: #e6e6e6;
+}
+
+
+.btn {
+    background-color: rgb(236, 236, 236); /* Blue background */
+    border: none; /* Remove _orders */
+    color: black; /* White text */
+    padding: 6px 12px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+    border-radius: 5px;
+}
+
+.btn:hover {
+    text-decoration: underline;
+}
+
+
+
+textarea {
+    display: block;
+    width: 100%;
+    min-height: 17px;
+    padding: 0 20px;
+    border: 0;
+    outline: 0;
+    font-size: 13px;
+    resize: none;
+    box-sizing: border-box;
+    background: transparent;
+    overflow-wrap: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+
+.btn {
+    font-size: 10pt;
+    color: black;
+    background-color: #eff0f2;
+    text-decoration: none;
+    padding: 9px 10px 9px 10px;
+    border-radius: 5px;
+    float: right;
+}
+
+.paging {
+    color: black;
+    width: 100%;
+    margin-left: 5%;
+    text-align: center;
+}
+
+.paging > a {
+    padding: 0 5px 0 5px;
+    font-size: 15px;
+    color: #e0dfde;
+    width: auto;
+}
+
+.paging > a:hover {
+    animation-duration: 3s;
+    color: black;
+    cursor: pointer;
+
+}
+
+.paging-container {
+    width: 80%;
+    height: 35px;
+    margin: auto;
+    text-align: center;
+    position: relative;
+}
+
+table {
+    margin: 30px 0 30px 0;
+}
+
+table td {
+    padding: 10px;
+}
+
+table tr {
+    margin: 0px;
+    padding: 0px;
+    font-size: 18px;
+}
+
+table tr:nth-child(2n) {
+    background-color: #f9f9fa;
+}
+
+table tr:nth-child(2n-1) {
+    background: #f5ffff;
+}
+
+table tr {
+    width: 100%;
+    height: auto;
+}
+
+
+
+label[for="search-target"] {
+    width: 15%;
+    height: 35px;
+    margin-right: 10px;
+}
+
+#search-target {
+    width: 100%;
+    height: 35px;
+    margin-right: 10px;
+}
+
+label[for="search-keyword"] {
+    width: 50%;
+    height: 35px;
+    margin-right: 10px;
+}
+
+#search-keyword {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #e9e8e8;
+    padding: 8px;
+    background: #f8f8f8;
+    outline-color: #e6e6e6;
+}
+
+label[for="search-direction"] {
+    width: 10%;
+    height: 35px;
+    margin-right: 10px;
+}
+
+#search-direction {
+    width: 100%;
+    height: 35px;
+    margin-right: 10px;
+}
+
+input[type="submit"] {
+    width: 10%;
+    height: 35px;
+}
+
+table td:nth-child(1) {
+    width: 15%;
+    height: auto;
+}
+table td:nth-child(2) {
+    width: 15%;
+    height: auto;
+}
+
+table td:nth-child(4) {
+    width: 30%;
+    height: auto;
+}
+table td:nth-child(3){
+    width: 30%;
+    height: auto;
+}
+table td:nth-child(5){
+    width: 5%;
+    height: auto;
+}
+table td:nth-child(6){
+    width: 5%;
+    height: auto;
+}
+table td {
+    text-align: center;
+}
+

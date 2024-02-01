@@ -1,0 +1,152 @@
+
+* {
+    border: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Malgun Gothic", sans-serif;
+
+}
+
+.container {
+    width: 75%;
+    min-width: 60%;
+    height: auto;
+    margin: auto;
+    display: flex;
+
+}
+.item-container {
+    width: 100%;
+    height: auto;
+}
+.emptyBox
+{
+    text-align: center;
+    width: 100%;
+    height: auto;
+
+}
+.writing-header {
+    position: relative;
+    margin: 20px 0 20px 0;
+    height: 40px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #323232;
+    text-align: center;
+}
+table td {
+    width: 10%;
+    height: auto;
+    padding: 10px;
+    text-align: center;
+
+}
+
+table tr {
+    margin: 0px;
+    padding: 0px;
+    font-size: 18px;
+    width: 100%;
+    height: auto;
+}
+
+table tr:nth-child(2n) {
+    background-color: #f9f9fa;
+}
+
+table tr:nth-child(2n-1) {
+    background: #f5ffff;
+}
+
+/*이미지*/
+td:nth-child(2) {
+    width: 150px;
+    height: 150px;
+}
+
+
+.itemBox {
+    width: 100%;
+    height: 100%;
+    margin: 20px;
+}
+
+.btn {
+    background-color: rgb(236, 236, 236); /* Blue background */
+    border: none; /* Remove _orders */
+    color: black; /* White text */
+    padding: 6px 12px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+    border-radius: 5px;
+}
+
+
+
+.btnBox {
+    width: auto;
+    height: auto;
+    float: right;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.btnBox > button {
+    width: 100px;
+    height: 35px;
+    text-align: center;
+}
+
+.imgBox {
+    width: 100px;
+    height: 100px;
+    background: #eff0f2;
+}
+
+.itemBox {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    margin: 5px;
+}
+
+
+.paging-container {
+    width: 80%;
+    height: 35px;
+
+    text-align: center;
+    position: relative;
+}
+.paging {
+    color: black;
+    width: 100%;
+
+    text-align: center;
+}
+
+.paging > a {
+    padding: 0 5px 0 5px;
+    font-size: 15px;
+    color: #e0dfde;
+    width: auto;
+}
+
+.paging > a:hover {
+    animation-duration: 3s;
+    color: black;
+    cursor: pointer;
+
+}
+.quantityInput{
+    text-align: center;
+    font-size: 18px;
+    width: 75px;
+    padding:0;
+    height: auto;
+}

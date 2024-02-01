@@ -1,0 +1,16 @@
+alter session set nls_language=english;
+truncate table INVENTORIES;
+truncate table WAREHOUSES;
+truncate table LOCATIONS;
+truncate table COUNTRIES;
+truncate table REGIONS;
+truncate table ORDER_ITEMS;
+truncate table CARTS;
+truncate table PRODUCTS;
+truncate table PRODUCT_CATEGORIES;
+truncate table ORDERS;
+truncate table CONTACTS;
+truncate table CUSTOMERS;
+truncate table COMMENTS;
+truncate table BOARDS;
+truncate table EMPLOYEES;

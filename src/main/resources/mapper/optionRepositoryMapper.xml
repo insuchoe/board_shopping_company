@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="optionRepositoryMapper">
+
+    <sql id="condition">
+        <choose>
+            <when test='option=="T"'>
+                <where>title LIKE '%' || #{keyword} || '%'</where>
+            </when>
+            <when test='option=="W"'>
+                <where>publisher LIKE '%' || #{keyword} || '%'</where>
+            </when>
+            <when test='option=="A"'>
+                <where>
+                    (title LIKE '%' || #{keyword} || '%'
+                    OR content LIKE '%' || #{keyword} || '%')
+                </where>
+            </when>
+        </choose>
+    </sql>
+
+
+    <select id="selectByName" parameterType="map" resultType="hashmap">
+
+        <choose>
+            <when test="clazz eq 'Employee' ">
+                SELECT * FROM EMPLOYEES
+                <choose>
+                    <when test="location.name() eq 'FIRST' ">
+                        <where>FIRST_NAME = #{name}</where>
+                    </when>
+                    <when test="location.name() eq 'LAST' ">
+                        <where>LAST_NAME = #{name}</where>
+                    </when>
+                    <when test="location.name() eq 'DEFAULT' ">
+                        <where>FIRST_NAME || ' ' || LAST_NAME = #{name}</where>
+                    </when>
+                </choose>
+            </when>
+
+            <when test="clazz eq 'Board' or clazz eq 'Comment' ">
+                <choose>
+                    <when test="clazz eq 'Board' ">
+                        SELECT * FROM BOARDS
+                    </when>
+                    <when test="clazz eq 'Comment' ">
+                        SELECT * FROM COMMENTS
+                    </when>
+                </choose>
+                <choose>
+                    <when test="location.name() eq 'FIRST' ">
+                        <where>PUBLISHER LIKE #{name} || '%'</where>
+                    </when>
+                    <when test="location.name() eq 'LAST' ">
+                        <where>PUBLISHER LIKE '%' || #{name}</where>
+                    </when>
+                    <when test="location.name() eq 'DEFAULT' ">
+                        <where>PUBLISHER = #{name}</where>
+                    </when>
+                </choose>
+            </when>
+
+            <when test="clazz eq 'Customer' ">
+                SELECT * FROM CUSTOMERS
+                <choose>
+                    <when test="location.name() eq 'FIRST' ">
+                        <where>NAME LIKE #{name} || '%'</where>
+                    </when>
+                    <when test="location.name() eq 'LAST' ">
+                        <where>NAME LIKE '%' || #{name}</where>
+                    </when>
+                    <when test="location.name() eq 'DEFAULT' ">
+                        <where>NAME = #{name}</where>
+                    </when>
+                </choose>
+            </when>
+
+        </choose>
+
+    </select>
+
+    <select id="selectLastCommentId"  resultType="bigInt">
+        SELECT COMMENT_ID FROM COMMENTS order by COMMENT_ID desc
+        OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+    </select>
+    <select id="selectNextBoardId"  resultType="bigInt">
+            SELECT BOARD_ID+1 FROM BOARDS order by BOARD_ID desc
+            OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+    </select>
+    <select id="selectLastBoardId"  resultType="bigInt">
+        SELECT BOARD_ID FROM BOARDS order by BOARD_ID desc
+        OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+    </select>
+    <select id="selectNextSequence" parameterType="map" resultType="bigInt">
+        <choose>
+            <when test=' clazz eq "OrderItem" '>SELECT BRANDEDCOMPANY.ITEM_ID.NEXTVAL FROM DUAL</when>
+            <when test=' clazz eq "Order" '>SELECT BRANDEDCOMPANY.ORDER_ID.NEXTVAL FROM DUAL</when>
+        </choose>
+    </select>
+
+    <resultMap id="board" type="com.brandedCompany.domain.Board">
+        <result jdbcType="NUMERIC" column="BOARD_ID" javaType="bigInt" property="boardId"/>
+        <result jdbcType="VARCHAR" column="TITLE" javaType="string" property="title"/>
+        <result jdbcType="VARCHAR" column="CONTENT" javaType="string" property="content"/>
+        <result jdbcType="VARCHAR" column="PUBLISHER" javaType="string" property="publisher"/>
+        <result jdbcType="DATE" column="PUBLISHED_DATE" javaType="localDate" property="publishedDate"/>
+        <result jdbcType="NUMERIC" column="VIEWS" javaType="bigInt" property="views"/>
+        <result jdbcType="NUMERIC" column="EMPLOYEE_ID" javaType="bigInt" property="employeeId"/>
+    </resultMap>
+
+    <select id="selectBoardByEmpId" parameterType="map" resultMap="board">
+        SELECT * FROM BOARDS
+        <where>EMPLOYEE_ID = #{employeeId}</where>
+    </select>
+
+
+</mapper>

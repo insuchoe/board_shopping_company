@@ -1,0 +1,15 @@
+DROP TABLE brandedCompany.boards;
+DROP TABLE brandedCompany.comments;
+DROP TABLE brandedCompany.order_items;
+DROP TABLE brandedCompany.orders;
+DROP TABLE brandedCompany.inventories;
+DROP TABLE brandedCompany.warehouses;
+DROP TABLE brandedCompany.employees;
+DROP TABLE brandedCompany.contacts;
+DROP TABLE brandedCompany.carts;
+DROP TABLE brandedCompany.customers;
+DROP TABLE brandedCompany.locations;
+DROP TABLE brandedCompany.countries;
+DROP TABLE brandedCompany.regions;
+DROP TABLE brandedCompany.products;
+DROP TABLE brandedCompany.product_categories;

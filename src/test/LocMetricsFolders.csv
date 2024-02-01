@@ -1,0 +1,11 @@
+Folder,Files,LOC,SLOC-P,SLOC-L,MVG,BLOC,C&SLOC,CLOC,CWORD,HCLOC,HCWORD
+Total,23,7713,5165,3185,40,864,20,1684,4744,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test,23,7713,5165,3185,40,864,20,1684,4744,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java,23,7713,5165,3185,40,864,20,1684,4744,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com,23,7713,5165,3185,40,864,20,1684,4744,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com\brandedCompany,23,7713,5165,3185,40,864,20,1684,4744,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com\brandedCompany\controller,18,5693,4217,2453,20,618,20,858,2363,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com\brandedCompany\controller\customer,8,1884,1439,843,12,198,3,247,605,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com\brandedCompany\controller\employee,10,3809,2778,1610,8,420,17,611,1758,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com\brandedCompany\repository,3,1466,541,428,15,145,0,780,2243,0,0
+C:\Users\cis94\ideaProjects\brandedCompany\src\test\java\com\brandedCompany\serivce,2,554,407,304,5,101,0,46,138,0,0
